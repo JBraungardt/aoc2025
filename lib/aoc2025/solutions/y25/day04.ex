@@ -31,7 +31,28 @@ defmodule Aoc2025.Solutions.Y25.Day04 do
     Enum.count(r, &(&1 != ".")) < 4
   end
 
-  # def part_two(problem) do
-  #   problem
-  # end
+  def part_two(problem) do
+    remove_accessable(problem, :start, 0)
+  end
+
+  defp remove_accessable(_input, 0, total_removed), do: total_removed
+
+  defp remove_accessable(input = %Grid{}, _removed_last_run, total_removed) do
+    input =
+      Grid.map(input, fn _pos, value ->
+        if value == "X", do: ".", else: value
+      end)
+
+    changed =
+      input.grid
+      |> Enum.filter(fn {pos, val} ->
+        val == "@" and can_move?(pos, input)
+      end)
+      |> Map.new(fn {pos, _} -> {pos, "X"} end)
+
+    updated_map = Map.merge(input.grid, changed)
+    removed = Enum.count(updated_map, fn {_pos, value} -> value == "X" end)
+
+    remove_accessable(%Grid{input | grid: updated_map}, removed, total_removed + removed)
+  end
 end

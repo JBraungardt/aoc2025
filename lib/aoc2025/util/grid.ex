@@ -27,7 +27,7 @@ defmodule Aoc2025.Util.Grid do
   end
 
   def map(%__MODULE__{grid: grid} = m, transformer) do
-    new_grid = Map.new(grid, fn {pos, _val} -> {pos, transformer.(pos, m)} end)
+    new_grid = Map.new(grid, fn {pos, val} -> {pos, transformer.(pos, val)} end)
     %{m | grid: new_grid}
   end
 
