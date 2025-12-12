@@ -30,12 +30,7 @@ defmodule Aoc2025.Solutions.Y25.Day06Test do
   # end
 
   test "part two example" do
-    input = ~S"""
-    123 328  51 64
-     45 64  387 23
-      6 98  215 314
-    *   +   *   +
-    """
+    input = "123 328  51 64 \n 45 64  387 23 \n  6 98  215 314\n*   +   *   +  "
 
     assert 3_263_827 == solve(input, :part_two)
   end
