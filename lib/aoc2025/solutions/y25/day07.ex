@@ -4,10 +4,11 @@ defmodule Aoc2025.Solutions.Y25.Day07 do
 
   def parse(input, _part) do
     Input.read!(input)
-    |> Grid.new()
   end
 
-  def part_one(%Grid{width: width, height: height} = grid) do
+  def part_one(problem) do
+    %Grid{height: height, width: width} = grid = Grid.new(problem)
+
     grid =
       for y <- 0..(height - 1), x <- 0..(width - 1), reduce: grid do
         acc ->
@@ -52,6 +53,43 @@ defmodule Aoc2025.Solutions.Y25.Day07 do
   end
 
   def part_two(problem) do
-    problem
+    [start | rest] = String.split(problem)
+
+    [{start_col, _}] = Regex.run(~r/[^.]/, start, return: :index)
+
+    splitters =
+      Enum.map(rest, fn row ->
+        row
+        |> String.to_charlist()
+        |> Enum.with_index()
+        |> Enum.filter(&(elem(&1, 0) == ?^))
+        |> MapSet.new(&elem(&1, 1))
+      end)
+
+    initial_beem = %{start_col => 1}
+
+    Enum.reduce(splitters, initial_beem, &process_row/2)
+    |> Enum.sum_by(&elem(&1, 1))
+  end
+
+  defp process_row(row_splitters, beams) do
+    Enum.reduce(row_splitters, beams, &maybe_split/2)
+  end
+
+  defp maybe_split(col, beams) do
+    case Map.pop(beams, col) do
+      {nil, map} ->
+        map
+
+      {count, map} ->
+        Map.merge(
+          map,
+          %{
+            (col + 1) => count,
+            (col - 1) => count
+          },
+          fn _k, a, b -> a + b end
+        )
+    end
   end
 end
